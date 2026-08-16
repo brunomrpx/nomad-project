@@ -1,8 +1,10 @@
 ---
-import { Image } from "astro:assets";
 import type { Item } from "../lib/items";
-import { formatPrice, buildWhatsappLink } from "../lib/items";
+import { formatPrice, buildWhatsappLink, statusLabel } from "../lib/items";
+import { resolveItemPhotos } from "../lib/photos";
+import { withBase } from "../lib/urls";
 import { site } from "../data/site";
+import PhotoGallery from "./PhotoGallery.astro";
 
 interface Props {
   item: Item;
@@ -10,82 +12,191 @@ interface Props {
 
 const { item } = Astro.props;
 
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/items/**/*.{jpeg,jpg,png,webp,JPEG,JPG,PNG,WEBP}",
-  { eager: true }
-);
-const mainPhotoPath = `/src/assets/items/${item.id}/${item.photos[0]}`;
-const mainPhoto = images[mainPhotoPath]?.default;
-
-if (!mainPhoto) {
-  console.warn(`[ItemCard] foto não encontrada: ${mainPhotoPath}`);
-}
-
-const statusLabel: Record<Item["status"], string> = {
-  disponivel: "Disponível",
-  reservado: "Reservado",
-  vendido: "Vendido",
-};
-
+const resolvedPhotos = resolveItemPhotos(item);
 const isAvailable = item.status === "disponivel";
 const whatsappLink = buildWhatsappLink(site.whatsappNumber, item);
+const ticketId = item.id.toUpperCase();
+const detailHref = withBase(`itens/${item.id}/`);
 ---
 
-<article class:list={["card", { unavailable: !isAvailable }]}>
-  {mainPhoto && <Image src={mainPhoto} alt={item.title} width={800} />}
-  <h2>{item.title}</h2>
-  <p>{item.description}</p>
-  <p class="price">{formatPrice(item.price)}</p>
-  {!isAvailable && <span class="badge">{statusLabel[item.status]}</span>}
-  {
-    isAvailable ? (
-      <a class="cta" href={whatsappLink} target="_blank" rel="noopener noreferrer">
-        Tenho interesse
+<article class:list={["ticket", { unavailable: !isAvailable }]}>
+  <div class="ticket-photo">
+    <PhotoGallery photos={resolvedPhotos} alt={item.title} groupId={item.id} imgWidth={800} />
+    {!isAvailable && <span class="stamp">{statusLabel[item.status]}</span>}
+  </div>
+  <div class="perforation" aria-hidden="true"></div>
+  <div class="ticket-stub">
+    <p class="ticket-id">Item n&ordm; {ticketId}</p>
+    <h2>
+      <a class="stretched-link" href={detailHref}>
+        {item.title}
       </a>
-    ) : (
-      <p class="cta-disabled">Item não disponível</p>
-    )
-  }
+    </h2>
+    <p class="desc">{item.description}</p>
+    <div class="stub-footer">
+      <p class="price">{formatPrice(item.price)}</p>
+      {
+        isAvailable ? (
+          <a class="cta" href={whatsappLink} target="_blank" rel="noopener noreferrer">
+            Tenho interesse
+          </a>
+        ) : (
+          <p class="cta-disabled">Indisponível</p>
+        )
+      }
+    </div>
+  </div>
 </article>
 
 <style>
-  .card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
+  .ticket {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
   }
-  .card.unavailable {
-    opacity: 0.5;
+
+  .ticket-photo {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--color-ink);
   }
-  .card img {
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
+  .ticket.unavailable .ticket-photo :global(img) {
+    filter: grayscale(0.5) brightness(0.85);
   }
-  .price {
-    font-weight: bold;
-  }
-  .badge {
-    display: inline-block;
-    background: #333;
-    color: white;
+
+  .stamp {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 3;
+    transform: rotate(-10deg);
+    border: 3px solid var(--color-stamp);
+    color: var(--color-stamp);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    background: rgba(243, 233, 210, 0.88);
     font-size: 0.8rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
   }
-  .cta {
-    display: inline-block;
-    margin-top: 0.5rem;
-    background: #25d366;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+
+  .perforation {
+    position: relative;
+    height: 0;
+    border-top: 2px dashed rgba(28, 35, 51, 0.3);
+  }
+  .perforation::before,
+  .perforation::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-bg);
+  }
+  .perforation::before {
+    left: -9px;
+  }
+  .perforation::after {
+    right: -9px;
+  }
+
+  .ticket-stub {
+    position: relative;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .ticket.unavailable .ticket-stub {
+    opacity: 0.7;
+  }
+
+  .ticket-id {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    margin: 0 0 0.5rem;
+  }
+
+  .ticket-stub h2 {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0 0 0.5rem;
+  }
+  .stretched-link {
+    color: inherit;
     text-decoration: none;
   }
+  .stretched-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .stretched-link:hover {
+    text-decoration: underline;
+  }
+
+  .desc {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--color-ink-soft);
+    margin: 0 0 1.25rem;
+    flex: 1;
+  }
+
+  .stub-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-top: 1px solid rgba(28, 35, 51, 0.14);
+    padding-top: 1rem;
+  }
+
+  .price {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin: 0;
+  }
+
+  .cta {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--color-green);
+    color: #08210f;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.15s ease;
+  }
+  .cta:hover {
+    transform: translateY(-1px);
+  }
+
   .cta-disabled {
-    display: inline-block;
-    margin-top: 0.5rem;
-    color: #666;
-    font-style: italic;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+    margin: 0;
   }
 </style>

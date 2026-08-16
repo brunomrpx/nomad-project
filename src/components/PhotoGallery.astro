@@ -1,0 +1,171 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  photos: ImageMetadata[];
+  alt: string;
+  groupId: string;
+  imgWidth?: number;
+}
+
+const { photos, alt, groupId, imgWidth = 1200 } = Astro.props;
+---
+
+<div class="gallery">
+  {
+    photos.map((photo, i) => (
+      <>
+        <input
+          type="radio"
+          name={`photo-${groupId}`}
+          id={`photo-${groupId}-${i}`}
+          class:list={["photo-radio", `photo-radio-${i}`]}
+          checked={i === 0}
+        />
+        <Image
+          src={photo}
+          alt={alt}
+          width={imgWidth}
+          class:list={["photo-slide", `photo-slide-${i}`]}
+        />
+      </>
+    ))
+  }
+  {
+    photos.length > 1 && (
+      <>
+        {photos.map(
+          (_, i) =>
+            i > 0 && (
+              <label
+                for={`photo-${groupId}-${i - 1}`}
+                class:list={["nav", "nav-prev", `nav-prev-${i}`]}
+                aria-label="Foto anterior"
+              >
+                ‹
+              </label>
+            )
+        )}
+        {photos.map(
+          (_, i) =>
+            i < photos.length - 1 && (
+              <label
+                for={`photo-${groupId}-${i + 1}`}
+                class:list={["nav", "nav-next", `nav-next-${i}`]}
+                aria-label="Próxima foto"
+              >
+                ›
+              </label>
+            )
+        )}
+        <div class="thumbs">
+          {photos.map((_, i) => (
+            <label for={`photo-${groupId}-${i}`} class="thumb-dot" aria-label={`Foto ${i + 1}`} />
+          ))}
+        </div>
+      </>
+    )
+  }
+</div>
+
+<style>
+  .gallery {
+    position: absolute;
+    inset: 0;
+  }
+  .gallery :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .photo-radio {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+  .gallery :global(img.photo-slide) {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .photo-radio-0:checked ~ :global(img.photo-slide-0),
+  .photo-radio-1:checked ~ :global(img.photo-slide-1),
+  .photo-radio-2:checked ~ :global(img.photo-slide-2),
+  .photo-radio-3:checked ~ :global(img.photo-slide-3) {
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.75rem;
+    height: 2.75rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(18, 25, 43, 0.55);
+    color: var(--color-paper);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 2;
+    transition:
+      background 0.15s ease,
+      transform 0.15s ease;
+  }
+  .nav:hover {
+    background: rgba(18, 25, 43, 0.8);
+  }
+  .nav:active {
+    transform: translateY(-50%) scale(0.94);
+  }
+  .nav-prev {
+    left: 0.5rem;
+  }
+  .nav-next {
+    right: 0.5rem;
+  }
+  .photo-radio-1:checked ~ .nav-prev-1,
+  .photo-radio-2:checked ~ .nav-prev-2,
+  .photo-radio-3:checked ~ .nav-prev-3,
+  .photo-radio-0:checked ~ .nav-next-0,
+  .photo-radio-1:checked ~ .nav-next-1,
+  .photo-radio-2:checked ~ .nav-next-2 {
+    display: flex;
+  }
+
+  .thumbs {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.4rem;
+    z-index: 2;
+  }
+  .thumb-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(243, 233, 210, 0.5);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .thumb-dot:hover {
+    background: rgba(243, 233, 210, 0.8);
+  }
+  .photo-radio-0:checked ~ .thumbs .thumb-dot:nth-of-type(1),
+  .photo-radio-1:checked ~ .thumbs .thumb-dot:nth-of-type(2),
+  .photo-radio-2:checked ~ .thumbs .thumb-dot:nth-of-type(3),
+  .photo-radio-3:checked ~ .thumbs .thumb-dot:nth-of-type(4) {
+    background: var(--color-amber);
+  }
+</style>

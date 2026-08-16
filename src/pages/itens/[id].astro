@@ -1,0 +1,202 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PhotoGallery from "../../components/PhotoGallery.astro";
+import { site } from "../../data/site";
+import { items } from "../../data/items";
+import { formatPrice, buildWhatsappLink, statusLabel, type Item } from "../../lib/items";
+import { resolveItemPhotos } from "../../lib/photos";
+import { withBase } from "../../lib/urls";
+
+export function getStaticPaths() {
+  return items.map((item) => ({
+    params: { id: item.id },
+    props: { item },
+  }));
+}
+
+interface Props {
+  item: Item;
+}
+
+const { item } = Astro.props;
+
+const resolvedPhotos = resolveItemPhotos(item);
+const isAvailable = item.status === "disponivel";
+const whatsappLink = buildWhatsappLink(site.whatsappNumber, item);
+const ticketId = item.id.toUpperCase();
+const homeHref = withBase("");
+---
+
+<BaseLayout title={`${item.title} — ${site.title}`}>
+  <div class="detail-wrap">
+    <a class="back" href={homeHref}>&larr; Voltar</a>
+    <article class:list={["detail", { unavailable: !isAvailable }]}>
+      <div class="detail-photo">
+        <PhotoGallery photos={resolvedPhotos} alt={item.title} groupId={item.id} imgWidth={1400} />
+        {!isAvailable && <span class="stamp">{statusLabel[item.status]}</span>}
+      </div>
+      <div class="perforation" aria-hidden="true"></div>
+      <div class="detail-info">
+        <p class="ticket-id">Item n&ordm; {ticketId}</p>
+        <h1>{item.title}</h1>
+        <p class="desc">{item.description}</p>
+        <div class="detail-footer">
+          <p class="price">{formatPrice(item.price)}</p>
+          {
+            isAvailable ? (
+              <a class="cta" href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                Tenho interesse
+              </a>
+            ) : (
+              <p class="cta-disabled">Indisponível</p>
+            )
+          }
+        </div>
+      </div>
+    </article>
+  </div>
+  <style>
+    .detail-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-amber);
+      text-decoration: none;
+      margin-bottom: 1.5rem;
+    }
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    .detail {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-paper);
+      color: var(--color-ink);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    .detail-photo {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: var(--color-ink);
+    }
+    .detail.unavailable .detail-photo :global(img) {
+      filter: grayscale(0.5) brightness(0.85);
+    }
+
+    .stamp {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      z-index: 3;
+      transform: rotate(-10deg);
+      border: 3px solid var(--color-stamp);
+      color: var(--color-stamp);
+      font-family: var(--font-mono);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      background: rgba(243, 233, 210, 0.88);
+      font-size: 0.9rem;
+    }
+
+    .perforation {
+      position: relative;
+      height: 0;
+      border-top: 2px dashed rgba(28, 35, 51, 0.3);
+    }
+    .perforation::before,
+    .perforation::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--color-bg);
+    }
+    .perforation::before {
+      left: -11px;
+    }
+    .perforation::after {
+      right: -11px;
+    }
+
+    .detail-info {
+      padding: 2rem;
+    }
+    .ticket-id {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-ink-soft);
+      margin: 0 0 0.5rem;
+    }
+    .detail-info h1 {
+      font-family: var(--font-mono);
+      font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+      font-weight: 600;
+      line-height: 1.25;
+      margin: 0 0 1rem;
+    }
+    .desc {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--color-ink-soft);
+      margin: 0 0 2rem;
+    }
+    .detail-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(28, 35, 51, 0.14);
+      padding-top: 1.5rem;
+    }
+    .price {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 1.75rem;
+      margin: 0;
+    }
+    .cta {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 1rem;
+      background: var(--color-green);
+      color: #08210f;
+      padding: 0.85rem 1.75rem;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: transform 0.15s ease;
+    }
+    .cta:hover {
+      transform: translateY(-1px);
+    }
+    .cta-disabled {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: var(--color-ink-soft);
+      margin: 0;
+    }
+  </style>
+</BaseLayout>

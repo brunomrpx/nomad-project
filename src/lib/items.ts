@@ -9,6 +9,12 @@ export interface Item {
   status: ItemStatus;
 }
 
+export const statusLabel: Record<ItemStatus, string> = {
+  disponivel: "Disponível",
+  reservado: "Reservado",
+  vendido: "Vendido",
+};
+
 export function formatPrice(price: number): string {
   const [intPart, centsPart] = price.toFixed(2).split(".");
   const withThousands = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
