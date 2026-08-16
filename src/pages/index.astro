@@ -1,11 +1,43 @@
 ---
+import { site } from "../data/site";
+import { items } from "../data/items";
+import { sortItemsByStatus } from "../lib/items";
+import ItemCard from "../components/ItemCard.astro";
+
+const sortedItems = sortItemsByStatus(items);
 ---
+
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <title>Em construção</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{site.title}</title>
   </head>
   <body>
-    <p>Em construção.</p>
+    <header>
+      <h1>{site.title}</h1>
+      <p>{site.intro}</p>
+    </header>
+    <main class="grid">
+      {sortedItems.map((item) => <ItemCard item={item} />)}
+    </main>
+    <style>
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+      }
+      @media (min-width: 640px) {
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1024px) {
+        .grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+    </style>
   </body>
 </html>

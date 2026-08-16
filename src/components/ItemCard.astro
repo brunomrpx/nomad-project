@@ -1,0 +1,75 @@
+---
+import { Image } from "astro:assets";
+import type { Item } from "../lib/items";
+import { formatPrice, buildWhatsappLink } from "../lib/items";
+import { site } from "../data/site";
+
+interface Props {
+  item: Item;
+}
+
+const { item } = Astro.props;
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/items/**/*.{jpeg,jpg,png,webp}",
+  { eager: true }
+);
+const mainPhotoPath = `/src/assets/items/${item.id}/${item.photos[0]}`;
+const mainPhoto = images[mainPhotoPath]?.default;
+
+const statusLabel: Record<Item["status"], string> = {
+  disponivel: "Disponível",
+  reservado: "Reservado",
+  vendido: "Vendido",
+};
+
+const isAvailable = item.status === "disponivel";
+const whatsappLink = buildWhatsappLink(site.whatsappNumber, item);
+---
+
+<article class:list={["card", { unavailable: !isAvailable }]}>
+  {mainPhoto && <Image src={mainPhoto} alt={item.title} width={400} height={300} />}
+  <h2>{item.title}</h2>
+  <p>{item.description}</p>
+  <p class="price">{formatPrice(item.price)}</p>
+  {!isAvailable && <span class="badge">{statusLabel[item.status]}</span>}
+  <a class="cta" href={whatsappLink} target="_blank" rel="noopener noreferrer">
+    Tenho interesse
+  </a>
+</article>
+
+<style>
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .card.unavailable {
+    opacity: 0.5;
+  }
+  .card img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  .price {
+    font-weight: bold;
+  }
+  .badge {
+    display: inline-block;
+    background: #333;
+    color: white;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+  .cta {
+    display: inline-block;
+    margin-top: 0.5rem;
+    background: #25d366;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+</style>
