@@ -2,6 +2,13 @@
 
 Landing page simples para divulgar itens que estamos vendendo antes da mudança.
 
+## Antes de publicar pela primeira vez
+
+Antes do primeiro `git push` para `main` (ou seja, antes do site ir ao ar de verdade), confira:
+
+1. Troque o `whatsappNumber` em `src/data/site.ts` pelo número de WhatsApp de vocês — o valor que está lá agora é só um placeholder e não recebe mensagens.
+2. Apague o item `exemplo` de `src/data/items.ts` (e a pasta de fotos `src/assets/items/exemplo/`) antes de adicionar os itens reais.
+
 ## Como adicionar um item novo
 
 1. Coloque a(s) foto(s) em `src/assets/items/<id-do-item>/` (ex: `src/assets/items/sofa-cinza/1.jpg`).

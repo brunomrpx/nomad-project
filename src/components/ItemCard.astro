@@ -11,11 +11,15 @@ interface Props {
 const { item } = Astro.props;
 
 const images = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/items/**/*.{jpeg,jpg,png,webp}",
+  "/src/assets/items/**/*.{jpeg,jpg,png,webp,JPEG,JPG,PNG,WEBP}",
   { eager: true }
 );
 const mainPhotoPath = `/src/assets/items/${item.id}/${item.photos[0]}`;
 const mainPhoto = images[mainPhotoPath]?.default;
+
+if (!mainPhoto) {
+  console.warn(`[ItemCard] foto não encontrada: ${mainPhotoPath}`);
+}
 
 const statusLabel: Record<Item["status"], string> = {
   disponivel: "Disponível",
@@ -28,14 +32,20 @@ const whatsappLink = buildWhatsappLink(site.whatsappNumber, item);
 ---
 
 <article class:list={["card", { unavailable: !isAvailable }]}>
-  {mainPhoto && <Image src={mainPhoto} alt={item.title} width={400} height={300} />}
+  {mainPhoto && <Image src={mainPhoto} alt={item.title} width={800} />}
   <h2>{item.title}</h2>
   <p>{item.description}</p>
   <p class="price">{formatPrice(item.price)}</p>
   {!isAvailable && <span class="badge">{statusLabel[item.status]}</span>}
-  <a class="cta" href={whatsappLink} target="_blank" rel="noopener noreferrer">
-    Tenho interesse
-  </a>
+  {
+    isAvailable ? (
+      <a class="cta" href={whatsappLink} target="_blank" rel="noopener noreferrer">
+        Tenho interesse
+      </a>
+    ) : (
+      <p class="cta-disabled">Item não disponível</p>
+    )
+  }
 </article>
 
 <style>
@@ -71,5 +81,11 @@ const whatsappLink = buildWhatsappLink(site.whatsappNumber, item);
     padding: 0.5rem 1rem;
     border-radius: 4px;
     text-decoration: none;
+  }
+  .cta-disabled {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: #666;
+    font-style: italic;
   }
 </style>

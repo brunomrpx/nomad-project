@@ -17,11 +17,28 @@ const sortedItems = sortItemsByStatus(items);
     <header>
       <h1>{site.title}</h1>
       <p>{site.intro}</p>
+      <a
+        class="cta"
+        href={`https://wa.me/${site.whatsappNumber}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Falar no WhatsApp
+      </a>
     </header>
     <main class="grid">
       {sortedItems.map((item) => <ItemCard item={item} />)}
     </main>
     <style>
+      header .cta {
+        display: inline-block;
+        margin-top: 0.5rem;
+        background: #25d366;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+      }
       .grid {
         display: grid;
         grid-template-columns: 1fr;
