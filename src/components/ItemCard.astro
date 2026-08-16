@@ -15,7 +15,6 @@ const { item } = Astro.props;
 const resolvedPhotos = resolveItemPhotos(item);
 const isAvailable = item.status === "disponivel";
 const whatsappLink = buildWhatsappLink(site.whatsappNumber, item);
-const ticketId = item.id.toUpperCase();
 const detailHref = withBase(`itens/${item.id}/`);
 ---
 
@@ -25,7 +24,6 @@ const detailHref = withBase(`itens/${item.id}/`);
     {!isAvailable && <span class="stamp">{statusLabel[item.status]}</span>}
   </div>
   <div class="ticket-stub">
-    <p class="ticket-id">Item n&ordm; {ticketId}</p>
     <h2>
       <a class="stretched-link" href={detailHref}>
         {item.title}
@@ -96,15 +94,6 @@ const detailHref = withBase(`itens/${item.id}/`);
   }
   .ticket.unavailable .ticket-stub {
     opacity: 0.7;
-  }
-
-  .ticket-id {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-ink-soft);
-    margin: 0 0 0.5rem;
   }
 
   .ticket-stub h2 {
