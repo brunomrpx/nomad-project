@@ -24,7 +24,6 @@ const detailHref = withBase(`itens/${item.id}/`);
     <PhotoGallery photos={resolvedPhotos} alt={item.title} groupId={item.id} imgWidth={800} />
     {!isAvailable && <span class="stamp">{statusLabel[item.status]}</span>}
   </div>
-  <div class="perforation" aria-hidden="true"></div>
   <div class="ticket-stub">
     <p class="ticket-id">Item n&ordm; {ticketId}</p>
     <h2>
@@ -86,29 +85,6 @@ const detailHref = withBase(`itens/${item.id}/`);
     border-radius: 6px;
     background: rgba(243, 233, 210, 0.88);
     font-size: 0.8rem;
-  }
-
-  .perforation {
-    position: relative;
-    height: 0;
-    border-top: 2px dashed rgba(28, 35, 51, 0.3);
-  }
-  .perforation::before,
-  .perforation::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--color-bg);
-  }
-  .perforation::before {
-    left: -9px;
-  }
-  .perforation::after {
-    right: -9px;
   }
 
   .ticket-stub {

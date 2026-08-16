@@ -36,7 +36,6 @@ const homeHref = withBase("");
           <PhotoGallery photos={resolvedPhotos} alt={item.title} groupId={item.id} imgWidth={1400} />
           {!isAvailable && <span class="stamp">{statusLabel[item.status]}</span>}
         </div>
-        <div class="perforation" aria-hidden="true"></div>
         <div class="detail-info">
           <p class="ticket-id">Item n&ordm; {ticketId}</p>
           <h1>{item.title}</h1>
@@ -121,29 +120,6 @@ const homeHref = withBase("");
       border-radius: 6px;
       background: rgba(243, 233, 210, 0.88);
       font-size: 0.9rem;
-    }
-
-    .perforation {
-      position: relative;
-      height: 0;
-      border-top: 2px dashed rgba(28, 35, 51, 0.3);
-    }
-    .perforation::before,
-    .perforation::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: var(--color-bg);
-    }
-    .perforation::before {
-      left: -11px;
-    }
-    .perforation::after {
-      right: -11px;
     }
 
     .detail-info {
