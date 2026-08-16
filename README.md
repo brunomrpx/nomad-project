@@ -31,7 +31,7 @@ Antes do primeiro `git push` para `main` (ou seja, antes do site ir ao ar de ver
    git commit -m "add sofá cinza"
    git push
    ```
-4. Em 1–2 minutos o site atualiza sozinho em https://brunomrpx.github.io/nomad-landing-page.
+4. Em 1–2 minutos o site atualiza sozinho em https://brunomrpx.github.io/nomad-project.
 
 ## Marcar um item como reservado ou vendido
 

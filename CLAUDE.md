@@ -12,7 +12,7 @@ Full requirements/rationale: `docs/superpowers/specs/2026-08-15-moving-sale-land
 
 ```bash
 npm install
-npm run dev        # http://localhost:4321/nomad-landing-page/ (base path applies in dev too)
+npm run dev        # http://localhost:4321/nomad-project/ (base path applies in dev too)
 npm run build       # outputs to dist/
 npm run preview     # serve the built dist/ locally
 npm test            # vitest run — src/lib/items.test.ts
@@ -41,7 +41,7 @@ Photos are resolved from `src/assets/items/<item-id>/<filename>` via `resolveIte
 
 ### Base-path-aware links
 
-The site is deployed at a GitHub Pages subpath (`base: "/nomad-landing-page"` in `astro.config.mjs`), and `import.meta.env.BASE_URL` has **no trailing slash**. Never concatenate it directly (`` `${import.meta.env.BASE_URL}itens/${id}/` `` silently produces `/nomad-landing-pageitens/...`). Always build internal links through `withBase()` in `src/lib/urls.ts`, which normalizes the separator.
+The site is deployed at a GitHub Pages subpath (`base: "/nomad-project"` in `astro.config.mjs`), and `import.meta.env.BASE_URL` has **no trailing slash**. Never concatenate it directly (`` `${import.meta.env.BASE_URL}itens/${id}/` `` silently produces `/nomad-projectitens/...`). Always build internal links through `withBase()` in `src/lib/urls.ts`, which normalizes the separator.
 
 ### Visual identity (this is where UI/UX work will happen)
 
