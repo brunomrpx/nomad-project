@@ -1,14 +1,16 @@
 :root {
-  --color-bg: #111825;
-  --color-paper: #f3e9d2;
+  --color-bg: #181e2a;
+  --color-paper: #e8e4d3;
   --color-ink: #1c2333;
   --color-ink-soft: #5a6378;
   --color-amber: #e08a3e;
+  --color-pink: #d28799;
   --color-green: #3fa35e;
   --color-stamp: #b3372c;
-  --color-line: rgba(243, 233, 210, 0.16);
+  --color-line: rgba(232, 228, 211, 0.16);
 
   --font-display: "Fraunces Variable", "Fraunces", serif;
+  --font-poster: "Poppins", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
@@ -16,6 +18,10 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
@@ -38,6 +44,9 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {

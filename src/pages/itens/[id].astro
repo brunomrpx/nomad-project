@@ -28,34 +28,41 @@ const homeHref = withBase("");
 ---
 
 <BaseLayout title={`${item.title} — ${site.title}`}>
-  <div class="detail-wrap">
-    <a class="back" href={homeHref}>&larr; Voltar</a>
-    <article class:list={["detail", { unavailable: !isAvailable }]}>
-      <div class="detail-photo">
-        <PhotoGallery photos={resolvedPhotos} alt={item.title} groupId={item.id} imgWidth={1400} />
-        {!isAvailable && <span class="stamp">{statusLabel[item.status]}</span>}
-      </div>
-      <div class="perforation" aria-hidden="true"></div>
-      <div class="detail-info">
-        <p class="ticket-id">Item n&ordm; {ticketId}</p>
-        <h1>{item.title}</h1>
-        <p class="desc">{item.description}</p>
-        <div class="detail-footer">
-          <p class="price">{formatPrice(item.price)}</p>
-          {
-            isAvailable ? (
-              <a class="cta" href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                Tenho interesse
-              </a>
-            ) : (
-              <p class="cta-disabled">Indisponível</p>
-            )
-          }
+  <div class="detail-page">
+    <div class="detail-wrap">
+      <a class="back" href={homeHref}>&larr; Voltar</a>
+      <article class:list={["detail", { unavailable: !isAvailable }]}>
+        <div class="detail-photo">
+          <PhotoGallery photos={resolvedPhotos} alt={item.title} groupId={item.id} imgWidth={1400} />
+          {!isAvailable && <span class="stamp">{statusLabel[item.status]}</span>}
         </div>
-      </div>
-    </article>
+        <div class="perforation" aria-hidden="true"></div>
+        <div class="detail-info">
+          <p class="ticket-id">Item n&ordm; {ticketId}</p>
+          <h1>{item.title}</h1>
+          <p class="desc">{item.description}</p>
+          <div class="detail-footer">
+            <p class="price">{formatPrice(item.price)}</p>
+            {
+              isAvailable ? (
+                <a class="cta" href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                  Tenho interesse
+                </a>
+              ) : (
+                <p class="cta-disabled">Indisponível</p>
+              )
+            }
+          </div>
+        </div>
+      </article>
+    </div>
   </div>
   <style>
+    .detail-page {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--color-paper);
+    }
     .detail-wrap {
       max-width: 720px;
       margin: 0 auto;
@@ -69,7 +76,7 @@ const homeHref = withBase("");
       font-size: 0.85rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--color-amber);
+      color: var(--color-pink);
       text-decoration: none;
       margin-bottom: 1.5rem;
     }
@@ -182,8 +189,8 @@ const homeHref = withBase("");
       font-family: var(--font-mono);
       font-weight: 600;
       font-size: 1rem;
-      background: var(--color-green);
-      color: #08210f;
+      background: var(--color-pink);
+      color: var(--color-paper);
       padding: 0.85rem 1.75rem;
       border-radius: 999px;
       text-decoration: none;
