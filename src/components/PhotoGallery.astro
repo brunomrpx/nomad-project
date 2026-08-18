@@ -6,9 +6,10 @@ interface Props {
   alt: string;
   groupId: string;
   imgWidth?: number;
+  linkHref?: string;
 }
 
-const { photos, alt, groupId, imgWidth = 1200 } = Astro.props;
+const { photos, alt, groupId, imgWidth = 1200, linkHref } = Astro.props;
 ---
 
 <div class="gallery">
@@ -30,6 +31,13 @@ const { photos, alt, groupId, imgWidth = 1200 } = Astro.props;
         />
       </>
     ))
+  }
+  {
+    linkHref && (
+      <a href={linkHref} class="gallery-link" aria-label={alt}>
+        <span class="sr-only">{alt}</span>
+      </a>
+    )
   }
   {
     photos.length > 1 && (
@@ -86,6 +94,22 @@ const { photos, alt, groupId, imgWidth = 1200 } = Astro.props;
     width: 1px;
     height: 1px;
     pointer-events: none;
+  }
+  .gallery-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
   .gallery :global(img.photo-slide) {
     position: absolute;
@@ -169,3 +193,48 @@ const { photos, alt, groupId, imgWidth = 1200 } = Astro.props;
     background: var(--color-pink);
   }
 </style>
+
+<script>
+  const SWIPE_THRESHOLD = 40;
+
+  function setUpSwipe(gallery: Element) {
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
+
+    gallery.addEventListener(
+      "touchstart",
+      (e) => {
+        const touch = (e as TouchEvent).touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        tracking = true;
+      },
+      { passive: true }
+    );
+
+    gallery.addEventListener("touchend", (e) => {
+      if (!tracking) return;
+      tracking = false;
+
+      const touch = (e as TouchEvent).changedTouches[0];
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+
+      if (Math.abs(deltaX) < SWIPE_THRESHOLD || Math.abs(deltaX) < Math.abs(deltaY)) {
+        return;
+      }
+
+      const radios = Array.from(gallery.querySelectorAll<HTMLInputElement>(".photo-radio"));
+      const currentIndex = radios.findIndex((radio) => radio.checked);
+      if (currentIndex === -1) return;
+
+      const nextIndex = deltaX < 0 ? currentIndex + 1 : currentIndex - 1;
+      if (nextIndex >= 0 && nextIndex < radios.length) {
+        radios[nextIndex].checked = true;
+      }
+    });
+  }
+
+  document.querySelectorAll(".gallery").forEach(setUpSwipe);
+</script>

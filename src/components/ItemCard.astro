@@ -20,7 +20,13 @@ const detailHref = withBase(`itens/${item.id}/`);
 
 <article class:list={["ticket", { unavailable: !isAvailable }]}>
   <div class="ticket-photo">
-    <PhotoGallery photos={resolvedPhotos} alt={item.title} groupId={item.id} imgWidth={800} />
+    <PhotoGallery
+      photos={resolvedPhotos}
+      alt={item.title}
+      groupId={item.id}
+      imgWidth={800}
+      linkHref={detailHref}
+    />
     {!isAvailable && <span class="stamp">{statusLabel[item.status]}</span>}
   </div>
   <div class="ticket-stub">
