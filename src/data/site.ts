@@ -3,5 +3,5 @@ export const site = {
   intro:
     "Iniciamos nossa jornada como nômades e antes de partirmos para nosso próximo destino, precisamos vender alguns itens que fazem muito espaço na mochila.",
   ctaLine: "Se gostou de algo e quiser negociar, nos chama no WhatsApp!",
-  whatsappNumber: "5511999999999",
+  whatsappNumber: "5551991971316",
 };
